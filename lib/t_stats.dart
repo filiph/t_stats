@@ -92,7 +92,7 @@ class Statistic {
   /// 95% confidence interval lower bound.
   num get lowerBound => mean - marginOfError;
 
-  /// The margin of error.
+  /// The margin of error for 95% confidence.
   ///
   /// https://en.wikipedia.org/wiki/Margin_of_error
   num get marginOfError => _computeTDistribution(n) * stdError;

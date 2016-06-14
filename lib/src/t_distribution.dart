@@ -1,6 +1,6 @@
 part of t_stats;
 
-/// Computes qnorm for given sample size [n].
+/// Computes t-distribution critical values for given sample size [n].
 double _computeTDistribution(int n) {
   const List<double> TABLE = const [
     double.NAN,
