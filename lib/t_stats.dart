@@ -106,13 +106,41 @@ class Statistic {
   /// by simply computing whether confidence intervals at given [confidence]
   /// level don't overlap.
   ///
+  /// Note that when two statistics _do_ overlap, we cannot say anything with
+  /// statistical significance (i.e. it doesn't mean 'there is no statistical
+  /// difference' -- there very well may be). See link below for more info.
+  /// http://www.graphpad.com/support/faqid/1362/
+  ///
   /// The confidence interval is at 95% confidence level.
   bool isDifferentFrom(Statistic other) =>
       (other.lowerBound < lowerBound && other.upperBound < lowerBound) ||
       (other.lowerBound > upperBound && other.upperBound > upperBound);
 
-  toString() => "${_fmt(mean).padLeft(8)} ± ${_fmt(marginOfError).padLeft(6)}"
-      "    ${name ?? ''}";
+  toString() => "${_fmt(mean).padLeft(8)}  "
+      "± ${_fmt(marginOfError).padLeft(6)} MoE / "
+      "${_fmt(stdDeviation).padLeft(6)} SD    "
+      "${name ?? ''}";
+
+  Map<String, Object> toMap() => <String, Object>{
+        "name": name,
+        "n": n,
+        "mean": mean,
+        "max": max,
+        "min": min,
+        "stdDeviation": stdDeviation,
+        "stdError": stdError,
+        "lowerBound": lowerBound,
+        "marginOfError": marginOfError,
+        "upperBound": upperBound
+      };
+
+  /// Returns a tab separated value (TSV) string of [name], [mean],
+  /// [stdDeviation] and [n].
+  ///
+  /// This is useful for copy-pasting to graphing programs and spreadsheets.
+  ///
+  /// TODO: allow changing the defaults to: mean, {SEM, %CV}
+  String toTSV() => [name ?? "", mean, stdDeviation, n].join("\t");
 
   String _fmt(num value, {int precision}) {
     precision ??= this.precision;

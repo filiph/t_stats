@@ -1,6 +1,8 @@
 part of t_stats;
 
 /// Computes t-distribution critical values for given sample size [n].
+///
+/// Stolen from https://github.com/dart-lang/ton80/blob/master/bin/ton80.dart.
 double _computeTDistribution(int n) {
   const List<double> TABLE = const [
     double.NAN,
