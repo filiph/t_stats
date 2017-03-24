@@ -8,7 +8,7 @@ of numerical values and you want to:
 * find out the confidence interval (at the standard 95% confidence level), or
 * confirm relationship to other measurements. 
 
-## Usage
+## Library usage
 
 A simple usage example:
 
@@ -20,7 +20,7 @@ A simple usage example:
     // Prints true only if stats are different with statistical significance.
     print(myStat.isDifferentFrom(otherStat));
 
-## Executable use
+## Executable usage
 
 You can install the simple binary by running the following in the command line:
 
