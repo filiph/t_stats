@@ -76,15 +76,15 @@ class Statistic {
       min = math.min(value, min);
     }
 
-    double mean = total / values.length;
+    final double mean = total / values.length;
 
     double deltaSquaredSum = 0.0;
     for (num value in values) {
-      double delta = value - mean;
+      final double delta = value - mean;
       deltaSquaredSum += delta * delta;
     }
-    double variance = deltaSquaredSum / (values.length - 1);
-    double stdDeviation = math.sqrt(variance);
+    final double variance = deltaSquaredSum / (values.length - 1);
+    final double stdDeviation = math.sqrt(variance);
     return new Statistic(values.length, mean, min, max, stdDeviation,
         name: name);
   }
@@ -103,7 +103,7 @@ class Statistic {
   /// Returns `true` if statistic is significantly different from [other].
   ///
   /// This assumes normal distribution or very large samples. It is implemented
-  /// by simply computing whether confidence intervals at given [confidence]
+  /// by simply computing whether confidence intervals at given confidence
   /// level don't overlap.
   ///
   /// Note that when two statistics _do_ overlap, we cannot say anything with
@@ -116,11 +116,7 @@ class Statistic {
       (other.lowerBound < lowerBound && other.upperBound < lowerBound) ||
       (other.lowerBound > upperBound && other.upperBound > upperBound);
 
-  toString() => "${_fmt(mean).padLeft(8)}  "
-      "± ${_fmt(marginOfError).padLeft(6)} MoE / "
-      "${_fmt(stdDeviation).padLeft(6)} SD    "
-      "${name ?? ''}";
-
+  /// Serialize [Statistic] as a [Map].
   Map<String, Object> toMap() => <String, Object>{
         "name": name,
         "n": n,
@@ -133,6 +129,24 @@ class Statistic {
         "marginOfError": marginOfError,
         "upperBound": upperBound
       };
+
+  /// Output [Statistic] as a string.
+  ///
+  /// This will output something like the following:
+  ///
+  ///        15.00  ±  28.78 MoE /  34.50 SD    Name of statistic
+  ///
+  /// The first number is the geometric [mean], the second is the
+  /// [marginOfError] and the third is the [stdDeviation]. If [name]
+  /// is specified, it will trail the line.
+  ///
+  /// The line is formatted for easy use in tables, such as when outputting
+  /// and comparing many statistics in the terminal.
+  @override
+  String toString() => "${_fmt(mean).padLeft(8)}  "
+      "± ${_fmt(marginOfError).padLeft(6)} MoE / "
+      "${_fmt(stdDeviation).padLeft(6)} SD    "
+      "${name ?? ''}";
 
   /// Returns a tab separated value (TSV) string of [name], [mean],
   /// [stdDeviation] and [n].

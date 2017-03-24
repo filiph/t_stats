@@ -22,7 +22,7 @@ void main() {
       expect(() => new Statistic.from([1, 2]), returnsNormally);
     });
     test('10.000 measurements succeed', () {
-      var huge =
+      final huge =
           new Iterable.generate(10000, (n) => n * n).toList(growable: false);
       expect(() => new Statistic.from(huge), returnsNormally);
     });
@@ -31,7 +31,7 @@ void main() {
   group('Computes from precomputed', () {
     test('wikipedia sample', () {
       // https://en.wikipedia.org/wiki/Confidence_interval
-      var stat = new Statistic(25, 250.2, 230, 270, 2.5);
+      final stat = new Statistic(25, 250.2, 230, 270, 2.5);
       expect(stat.stdError, closeTo(0.5, 0.01));
       expect(stat.lowerBound, closeTo(249.22, 0.1));
       expect(stat.upperBound, closeTo(251.18, 0.1));
