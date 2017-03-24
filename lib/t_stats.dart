@@ -149,12 +149,22 @@ class Statistic {
       "${name ?? ''}";
 
   /// Returns a tab separated value (TSV) string of [name], [mean],
-  /// [stdDeviation] and [n].
+  /// [lowerBound], [upperBound], [marginOfError], [stdDeviation], [stdError],
+  /// [min], [max], [n].
   ///
   /// This is useful for copy-pasting to graphing programs and spreadsheets.
-  ///
-  /// TODO: allow changing the defaults to: mean, {SEM, %CV}
-  String toTSV() => [name ?? "", mean, stdDeviation, n].join("\t");
+  String toTSV() => [
+        name ?? "",
+        mean,
+        lowerBound,
+        upperBound,
+        marginOfError,
+        stdDeviation,
+        stdError,
+        min,
+        max,
+        n
+      ].join("\t");
 
   String _fmt(num value, {int precision}) {
     precision ??= this.precision;
