@@ -146,7 +146,7 @@ void main() {
       expect(exponentialStat.median, closeTo(62500, 1000));
       expect(random1Stat.median, closeTo(250, 5));
       expect(random2Stat.median, closeTo(50, 2));
-      expect(onlyTwoStat.median, closeTo(2, 0));
+      expect(onlyTwoStat.median, closeTo(1.5, 0));
     });
 
     test('correct median from UCL', () {
@@ -155,7 +155,7 @@ void main() {
 
       final stat = new Statistic.from(
           [-1.4, -0.6, -0.2, -0.9, -3.2, -2.4, -0.7, -5.5, 0.1, -0.1, -0.3]);
-      expect(stat.median, closeTo(-0.8, 0.001));
+      expect(stat.median, closeTo(-0.7, 0.001));
       expect(stat.medianLowerBound, closeTo(-3.2, 0.001));
       expect(stat.medianUpperBound, closeTo(-0.2, 0.001));
     });
@@ -185,9 +185,14 @@ void main() {
         6.25,
         6.45
       ]);
-      expect(stat.median, closeTo(4.40, 0.001));
+      expect(stat.median, closeTo(4.80, 0.001));
       expect(stat.medianLowerBound, closeTo(3.10, 0.001));
       expect(stat.medianUpperBound, closeTo(5.35, 0.001));
+    });
+
+    test('median from two values is tweened', () {
+      final stat = new Statistic.from([1, 2]);
+      expect(stat.median, closeTo(1.5, 0.0001));
     });
 
     test('higher bounds for more random data', () {

@@ -101,7 +101,7 @@ class Statistic {
     final double stdDeviation = math.sqrt(variance);
 
     num median;
-    if (n.isEven) {
+    if (n.isOdd) {
       median = orderedValues[n ~/ 2];
     } else {
       final int index = n ~/ 2 - 1;
