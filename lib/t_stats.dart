@@ -19,8 +19,6 @@ class Statistic {
   /// https://en.wikipedia.org/wiki/Expected_value
   final num mean;
 
-  // TODO: final num median;
-
   /// Maximum observed number.
   final num max;
 
@@ -43,49 +41,60 @@ class Statistic {
   /// Number of significant fraction digits.
   final int precision;
 
-  // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
-  //  can be negative when we have precision in the tens, for example
-  //  need to figure out what to do with input like [1], though
+  /// Median value.
+  final num median;
 
   /// Direct constructor of a Statistic instance.
   ///
   /// You probably want to use [Statistic.from] instead. But this constructor
   /// exists in case you know the statistics (like when you computed them
   /// ahead of time) and want to compare them to others.
-  Statistic(int n, this.mean, this.min, this.max, num stdDeviation,
+  Statistic(int n, this.mean, this.median, this.min, this.max, num stdDeviation,
       {this.name, this.precision: 2})
       : n = n,
         stdDeviation = stdDeviation,
         stdError = stdDeviation / math.sqrt(n);
 
+  // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
+  //  can be negative when we have precision in the tens, for example
+  //  need to figure out what to do with input like [1], though
+
   /// Takes [values] and creates the Statistic instance with its stats.
-  factory Statistic.from(List<num> values, {String name}) {
+  factory Statistic.from(Iterable<num> values, {String name}) {
     if (values == null) throw new ArgumentError.notNull("values");
-    if (values.length == 0) {
+
+    final List<num> orderedValues = new List<num>.from(values, growable: false)
+      ..sort();
+    if (orderedValues.length == 0) {
       throw new ArgumentError("Cannot make stats from empty list of values");
     }
-    if (values.length == 1) {
+    if (orderedValues.length == 1) {
       throw new ArgumentError("Cannot make stats from one value");
     }
+
     double total = 0.0;
     num max = double.NEGATIVE_INFINITY;
     num min = double.INFINITY;
-    for (num value in values) {
+    for (num value in orderedValues) {
       total += value;
       max = math.max(value, max);
       min = math.min(value, min);
     }
 
-    final double mean = total / values.length;
+    final double mean = total / orderedValues.length;
 
     double deltaSquaredSum = 0.0;
-    for (num value in values) {
+    for (num value in orderedValues) {
       final double delta = value - mean;
       deltaSquaredSum += delta * delta;
     }
-    final double variance = deltaSquaredSum / (values.length - 1);
+    final double variance = deltaSquaredSum / (orderedValues.length - 1);
     final double stdDeviation = math.sqrt(variance);
-    return new Statistic(values.length, mean, min, max, stdDeviation,
+
+    final median = orderedValues[orderedValues.length ~/ 2];
+
+    return new Statistic(
+        orderedValues.length, mean, median, min, max, stdDeviation,
         name: name);
   }
 

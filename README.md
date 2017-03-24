@@ -36,7 +36,7 @@ file that contains a line-delimited list of numbers, you can run:
 
 This takes full advantage of POSIX pipes, so you can have things like:
 
-    $ <some_complicated_unix_command> | t_stats
+    $ <some_complicated_unix_command> | t_stats --pretty
         9.88  ±  12.21 MoE /  23.75 SD
 
 If you don't provide the `--pretty` argument, the tool will print out
