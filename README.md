@@ -1,5 +1,7 @@
 # t_stats
 
+[![Build status](https://travis-ci.org/filiph/t_stats.svg)](https://travis-ci.org/filiph/t_stats)
+
 This package provides a single class which computes things like standard
 deviation and margin of error. It should be useful whenever you have a list 
 of numerical values and you want to:
