@@ -33,7 +33,7 @@ void main() {
   group('Computes from precomputed', () {
     test('wikipedia sample', () {
       // https://en.wikipedia.org/wiki/Confidence_interval
-      final stat = new Statistic(25, 250.2, 250, 230, 270, 2.5);
+      final stat = new Statistic(25, 250.2, 250, 230, 270, 2.5, 240, 260);
       expect(stat.stdError, closeTo(0.5, 0.01));
       expect(stat.lowerBound, closeTo(249.22, 0.1));
       expect(stat.upperBound, closeTo(251.18, 0.1));
@@ -147,6 +147,70 @@ void main() {
       expect(random1Stat.median, closeTo(250, 5));
       expect(random2Stat.median, closeTo(50, 2));
       expect(onlyTwoStat.median, closeTo(2, 0));
+    });
+
+    test('correct median from UCL', () {
+      // Example from here:
+      // https://www.ucl.ac.uk/ich/short-courses-events/about-stats-courses/stats-rm/Chapter_8_Content/confidence_interval_single_median
+
+      final stat = new Statistic.from(
+          [-1.4, -0.6, -0.2, -0.9, -3.2, -2.4, -0.7, -5.5, 0.1, -0.1, -0.3]);
+      expect(stat.median, closeTo(-0.8, 0.001));
+      expect(stat.medianLowerBound, closeTo(-3.2, 0.001));
+      expect(stat.medianUpperBound, closeTo(-0.2, 0.001));
+    });
+
+    test('correct median from PSU', () {
+      // Example from here:
+      // https://onlinecourses.science.psu.edu/stat414/node/316
+
+      final stat = new Statistic.from([
+        2.10,
+        2.35,
+        2.35,
+        3.10,
+        3.10,
+        3.15,
+        3.90,
+        3.90,
+        4.00,
+        4.80,
+        5.00,
+        5.00,
+        5.15,
+        5.35,
+        5.50,
+        6.00,
+        6.00,
+        6.25,
+        6.45
+      ]);
+      expect(stat.median, closeTo(4.40, 0.001));
+      expect(stat.medianLowerBound, closeTo(3.10, 0.001));
+      expect(stat.medianUpperBound, closeTo(5.35, 0.001));
+    });
+
+    test('higher bounds for more random data', () {
+      final consistentStat = new Statistic.from(
+          new Iterable.generate(1000, (_) => 100 + rand.nextInt(5)));
+      final inconsistentStat = new Statistic.from(
+          new Iterable.generate(1000, (_) => 100 + rand.nextInt(50)));
+      expect(inconsistentStat.medianUpperBound,
+          greaterThan(consistentStat.medianUpperBound));
+    });
+
+    test('infinite bounds for small sample sizes', () {
+      final smallStat = new Statistic.from([1, 2, 1, 2]);
+      expect(smallStat.medianLowerBound, double.NEGATIVE_INFINITY);
+      expect(smallStat.medianUpperBound, double.INFINITY);
+    });
+
+    test('small sample size doesn\'t show difference', () {
+      final smallStat = new Statistic.from([1, 2, 1, 2]);
+      final hugeStat =
+          new Statistic.from(new Iterable.generate(1000, (_) => 100));
+
+      expect(smallStat.isDifferentFrom(hugeStat), isFalse);
     });
 
     test('differences', () {

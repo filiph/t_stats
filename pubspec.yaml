@@ -1,11 +1,14 @@
 name: t_stats
 description: A micro-library for statistics, especially for comparing samples.
-version: 1.0.0
+version: 2.0.0
 author: Filip Hracek <filip.hracek@gmail.com>
 homepage: https://github.com/filiph/t_stats
 
 environment:
   sdk: '>=1.18.0 <2.0.0'
+
+dependencies:
+  quiver: ^0.24.0
 
 dev_dependencies:
   bignum: ^0.1.0

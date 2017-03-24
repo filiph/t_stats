@@ -7,6 +7,8 @@ library t_stats;
 
 import 'dart:math' as math;
 
+import 'package:t_stats/src/median_confidence.dart';
+
 part 'src/t_distribution.dart';
 
 /// Statistic information about a measurement.
@@ -44,12 +46,19 @@ class Statistic {
   /// Median value.
   final num median;
 
+  /// The lower bound of the 95% confidence interval of the population median.
+  final num medianLowerBound;
+
+  /// The upper bound of the 95% confidence interval of the population median.
+  final num medianUpperBound;
+
   /// Direct constructor of a Statistic instance.
   ///
   /// You probably want to use [Statistic.from] instead. But this constructor
   /// exists in case you know the statistics (like when you computed them
   /// ahead of time) and want to compare them to others.
   Statistic(int n, this.mean, this.median, this.min, this.max, num stdDeviation,
+      this.medianLowerBound, this.medianUpperBound,
       {this.name, this.precision: 2})
       : n = n,
         stdDeviation = stdDeviation,
@@ -65,48 +74,60 @@ class Statistic {
 
     final List<num> orderedValues = new List<num>.from(values, growable: false)
       ..sort();
-    if (orderedValues.length == 0) {
+    final int n = orderedValues.length;
+    if (n == 0) {
       throw new ArgumentError("Cannot make stats from empty list of values");
     }
-    if (orderedValues.length == 1) {
+    if (n == 1) {
       throw new ArgumentError("Cannot make stats from one value");
     }
 
+    final num min = orderedValues.first;
+    final num max = orderedValues.last;
+
     double total = 0.0;
-    num max = double.NEGATIVE_INFINITY;
-    num min = double.INFINITY;
     for (num value in orderedValues) {
       total += value;
-      max = math.max(value, max);
-      min = math.min(value, min);
     }
 
-    final double mean = total / orderedValues.length;
+    final double mean = total / n;
 
     double deltaSquaredSum = 0.0;
     for (num value in orderedValues) {
       final double delta = value - mean;
       deltaSquaredSum += delta * delta;
     }
-    final double variance = deltaSquaredSum / (orderedValues.length - 1);
+    final double variance = deltaSquaredSum / (n - 1);
     final double stdDeviation = math.sqrt(variance);
 
-    final median = orderedValues[orderedValues.length ~/ 2];
+    num median;
+    if (n.isEven) {
+      median = orderedValues[n ~/ 2];
+    } else {
+      final int index = n ~/ 2 - 1;
+      median = (orderedValues[index] + orderedValues[index + 1]) / 2;
+    }
+    final interval = computeMedianConfidence(n);
+    final lower = interval.isInvalid
+        ? double.NEGATIVE_INFINITY
+        : orderedValues[interval.a - 1];
+    final upper =
+        interval.isInvalid ? double.INFINITY : orderedValues[interval.b - 1];
 
-    return new Statistic(
-        orderedValues.length, mean, median, min, max, stdDeviation,
+    return new Statistic(orderedValues.length, mean, median, min, max,
+        stdDeviation, lower, upper,
         name: name);
   }
 
-  /// 95% confidence interval lower bound.
+  /// 95% confidence interval lower bound of the [mean].
   num get lowerBound => mean - marginOfError;
 
-  /// The margin of error for 95% confidence.
+  /// The [mean]'s margin of error for 95% confidence.
   ///
   /// https://en.wikipedia.org/wiki/Margin_of_error
   num get marginOfError => _computeTDistribution(n) * stdError;
 
-  /// 95% confidence interval upper bound.
+  /// 95% confidence interval upper bound of the [mean].
   num get upperBound => mean + marginOfError;
 
   /// Returns `true` if statistic is significantly different from [other].
@@ -122,8 +143,10 @@ class Statistic {
   ///
   /// The confidence interval is at 95% confidence level.
   bool isDifferentFrom(Statistic other) =>
-      (other.lowerBound < lowerBound && other.upperBound < lowerBound) ||
-      (other.lowerBound > upperBound && other.upperBound > upperBound);
+      (other.medianLowerBound < medianLowerBound &&
+          other.medianUpperBound < medianLowerBound) ||
+      (other.medianLowerBound > medianUpperBound &&
+          other.medianUpperBound > medianUpperBound);
 
   /// Serialize [Statistic] as a [Map].
   Map<String, Object> toMap() => <String, Object>{
