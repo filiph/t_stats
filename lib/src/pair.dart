@@ -11,7 +11,10 @@ class Pair {
   const Pair(this.a, this.b) : _invalid = false;
 
   /// Constructs a pair that should be considered invalid.
-  const Pair.invalid() : a = -1, b = -1, _invalid = true;
+  const Pair.invalid()
+      : a = -1,
+        b = -1,
+        _invalid = true;
 
   @override
   int get hashCode => hash2(a, b);

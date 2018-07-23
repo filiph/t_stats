@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:bignum/bignum.dart';
 import 'package:t_stats/src/factorial.dart';
 import 'package:t_stats/src/pair.dart';
 
@@ -11,7 +10,7 @@ void main() {
   for (int n = 2; n <= 300; n++) {
     Pair best;
     double bestConfidence;
-    double bestDeltaFrom95 = double.INFINITY;
+    double bestDeltaFrom95 = double.infinity;
     for (var bracket in _generateGrowingBracket(n)) {
       final confidence = computeConfidenceCoefficient(n, bracket.a, bracket.b);
       final delta = (confidence - 0.95).abs();
@@ -35,11 +34,11 @@ void main() {
 ///
 /// See:
 /// http://mathworld.wolfram.com/BinomialCoefficient.html
-BigInteger computeBinomialCoefficient(int n, int k) {
-  final BigInteger nFactorial = factorial(n);
-  final BigInteger kFactorial = factorial(k);
-  final BigInteger nMinusKFactorial = factorial(n - k);
-  final result = (nFactorial) / (kFactorial * nMinusKFactorial);
+BigInt computeBinomialCoefficient(int n, int k) {
+  final BigInt nFactorial = factorial(n);
+  final BigInt kFactorial = factorial(k);
+  final BigInt nMinusKFactorial = factorial(n - k);
+  final result = (nFactorial) ~/ (kFactorial * nMinusKFactorial);
   return result;
 }
 
@@ -52,7 +51,7 @@ double computeConfidenceCoefficient(
   for (int k = lowerPosition; k < higherPosition; k++) {
     // P(W) = (n over k) * ((0.5) ** k) * ((0.5) ** (n - k))
 //    print("computing P(W = $k)");
-    final BigInteger nOverK = computeBinomialCoefficient(n, k);
+    final BigInt nOverK = computeBinomialCoefficient(n, k);
     final double powers = math.pow(0.5, k) * math.pow(0.5, n - k);
     final double P = _multiply(nOverK, powers);
     result += P;
@@ -73,17 +72,17 @@ Iterable<Pair> _generateGrowingBracket(int n) sync* {
   }
 }
 
-/// Multiplies [BigInteger] number by a [double] and returns a double.
+/// Multiplies [BigInt] number by a [double] and returns a double.
 ///
 /// It is expected that the result will be <0,1>.
-double _multiply(BigInteger integer, double powers) {
-  BigInteger divided = integer.clone();
+double _multiply(BigInt integer, double powers) {
+  BigInt divided = integer;
   double multiplied = powers;
   final billion = 1000000000;
-  final billionInteger = new BigInteger(1000000000);
-  while (divided.bitCount() > 32) {
-    divided = divided.divide(billionInteger);
+  final billionInteger = BigInt.from(billion);
+  while (!divided.isValidInt) {
+    divided = divided ~/ billionInteger;
     multiplied *= billion;
   }
-  return divided.intValue() * multiplied;
+  return divided.toInt() * multiplied;
 }

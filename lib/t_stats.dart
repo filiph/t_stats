@@ -109,10 +109,10 @@ class Statistic {
     }
     final interval = computeMedianConfidence(n);
     final lower = interval.isInvalid
-        ? double.NEGATIVE_INFINITY
+        ? double.negativeInfinity
         : orderedValues[interval.a - 1];
     final upper =
-        interval.isInvalid ? double.INFINITY : orderedValues[interval.b - 1];
+        interval.isInvalid ? double.infinity : orderedValues[interval.b - 1];
 
     return new Statistic(orderedValues.length, mean, median, min, max,
         stdDeviation, lower, upper,

@@ -17,7 +17,7 @@ Future<Null> main(List<String> args) async {
         hintGiven = true;
       })
       .map((bytes) {
-        final string = UTF8.decode(bytes);
+        final string = utf8.decode(bytes);
         final lines = lineSplitter.convert(string);
         return lines;
       })
@@ -25,7 +25,7 @@ Future<Null> main(List<String> args) async {
       .toList();
 
   final List<num> numbers = lines
-      .map((s) => num.parse(s, (_) => null))
+      .map((s) => num.tryParse(s))
       .where((n) => n != null)
       .toList(growable: false);
 
