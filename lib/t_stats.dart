@@ -72,8 +72,7 @@ class Statistic {
   factory Statistic.from(Iterable<num> values, {String name}) {
     if (values == null) throw ArgumentError.notNull("values");
 
-    final orderedValues = List<num>.from(values, growable: false)
-      ..sort();
+    final orderedValues = List<num>.from(values, growable: false)..sort();
     final n = orderedValues.length;
     if (n == 0) {
       throw ArgumentError("Cannot make stats from empty list of values");
