@@ -1,4 +1,7 @@
-# Changelog
+## 2.1.0
+
+- Update Dart SDK constraints to `>=2.0.0` (end of support for Dart 1)
+- Fix formatting (e.g. remove optional `new` and `const`)
 
 ## 2.0.0
 

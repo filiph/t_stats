@@ -14,11 +14,11 @@ of numerical values and you want to:
 
 A simple usage example:
 
-    var myStat = new Statistic.from(myMeasurements, name: "My scores");
+    var myStat = Statistic.from(myMeasurements, name: "My scores");
     // Prints the most basic stats.
     print(myStat);
     
-    var otherStat = new Statistic.from(otherMeasurements);
+    var otherStat = Statistic.from(otherMeasurements);
     // Prints true only if stats are different with statistical significance.
     print(myStat.isDifferentFrom(otherStat));
 
