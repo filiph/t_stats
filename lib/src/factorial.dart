@@ -11,12 +11,12 @@ BigInt factorial(int n) {
 
   if (n < 2) return BigInt.one;
 
-  BigInt p = BigInt.one;
-  BigInt r = BigInt.one;
-  int N = 1;
+  var p = BigInt.one;
+  var r = BigInt.one;
+  var N = 1;
 
   BigInt product(int n) {
-    final int m = n ~/ 2;
+    final m = n ~/ 2;
     if (m == 0) {
       return BigInt.from(N += 2);
     }
@@ -26,16 +26,16 @@ BigInt factorial(int n) {
     return product(n - m) * product(m);
   }
 
-  int h = 0;
-  int shift = 0;
-  int high = 1;
-  int log2n = (math.log(n) / math.ln2).floor();
+  var h = 0;
+  var shift = 0;
+  var high = 1;
+  var log2n = (math.log(n) / math.ln2).floor();
 
   while (h != n) {
     shift += h;
     h = n >> log2n;
     log2n -= 1;
-    int len = high;
+    var len = high;
     high = (h - 1) | 1;
     len = (high - len) ~/ 2;
 

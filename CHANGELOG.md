@@ -1,3 +1,7 @@
+## 2.1.1
+
+- Minor lint fixes (use `package:pedantic`)
+
 ## 2.1.0
 
 - Update Dart SDK constraints to `>=2.0.0` (end of support for Dart 1)

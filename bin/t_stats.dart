@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:t_stats/t_stats.dart';
 
 Future<Null> main(List<String> args) async {
-  final bool pretty = args.contains("--pretty");
+  final pretty = args.contains("--pretty");
   final lineSplitter = LineSplitter();
-  bool hintGiven = false;
+  var hintGiven = false;
 
-  final List<String> lines = await stdin
+  final lines = await stdin
       .timeout(const Duration(milliseconds: 100), onTimeout: (sink) {
         if (hintGiven) return;
         stdout.writeln("Please provide a POSIX pipe or write one number "
@@ -24,7 +24,7 @@ Future<Null> main(List<String> args) async {
       .expand((list) => list)
       .toList();
 
-  final List<num> numbers = lines
+  final numbers = lines
       .map((s) => num.tryParse(s))
       .where((n) => n != null)
       .toList(growable: false);

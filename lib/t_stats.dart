@@ -72,9 +72,9 @@ class Statistic {
   factory Statistic.from(Iterable<num> values, {String name}) {
     if (values == null) throw ArgumentError.notNull("values");
 
-    final List<num> orderedValues = List<num>.from(values, growable: false)
+    final orderedValues = List<num>.from(values, growable: false)
       ..sort();
-    final int n = orderedValues.length;
+    final n = orderedValues.length;
     if (n == 0) {
       throw ArgumentError("Cannot make stats from empty list of values");
     }
@@ -82,29 +82,29 @@ class Statistic {
       throw ArgumentError("Cannot make stats from one value");
     }
 
-    final num min = orderedValues.first;
-    final num max = orderedValues.last;
+    final min = orderedValues.first;
+    final max = orderedValues.last;
 
-    double total = 0.0;
-    for (num value in orderedValues) {
+    var total = 0.0;
+    for (var value in orderedValues) {
       total += value;
     }
 
-    final double mean = total / n;
+    final mean = total / n;
 
-    double deltaSquaredSum = 0.0;
-    for (num value in orderedValues) {
+    var deltaSquaredSum = 0.0;
+    for (var value in orderedValues) {
       final double delta = value - mean;
       deltaSquaredSum += delta * delta;
     }
-    final double variance = deltaSquaredSum / (n - 1);
-    final double stdDeviation = math.sqrt(variance);
+    final variance = deltaSquaredSum / (n - 1);
+    final stdDeviation = math.sqrt(variance);
 
     num median;
     if (n.isOdd) {
       median = orderedValues[n ~/ 2];
     } else {
-      final int index = n ~/ 2 - 1;
+      final index = n ~/ 2 - 1;
       median = (orderedValues[index] + orderedValues[index + 1]) / 2;
     }
     final interval = computeMedianConfidence(n);

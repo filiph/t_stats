@@ -4,7 +4,7 @@ part of t_stats;
 ///
 /// Stolen from https://github.com/dart-lang/ton80/blob/master/bin/ton80.dart.
 double _computeTDistribution(int n) {
-  const List<double> table = [
+  const table = [
     double.nan,
     double.nan,
     12.71,
@@ -103,12 +103,14 @@ double _computeTDistribution(int n) {
     1.99,
     1.99
   ];
-  if (n >= 474)
+
+  if (n >= 474) {
     return 1.96;
-  else if (n >= 160)
+  } else if (n >= 160) {
     return 1.97;
-  else if (n >= table.length)
+  } else if (n >= table.length) {
     return 1.98;
-  else
+  } else {
     return table[n];
+  }
 }

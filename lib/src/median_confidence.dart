@@ -114,9 +114,9 @@ Pair computeMedianConfidence(int n) {
 
   if (n > 100) {
     // Use the classic formula.
-    final double sqrtN = sqrt(n);
-    final int lower = (n / 2 - 1.96 * sqrtN / 2).ceil();
-    final int upper = (1 + n / 2 + 1.96 * sqrtN / 2).floor();
+    final sqrtN = sqrt(n);
+    final lower = (n / 2 - 1.96 * sqrtN / 2).ceil();
+    final upper = (1 + n / 2 + 1.96 * sqrtN / 2).floor();
     return Pair(lower, upper);
   }
 

@@ -7,10 +7,10 @@ import 'package:t_stats/src/pair.dart';
 /// https://onlinecourses.science.psu.edu/stat414/node/316
 
 void main() {
-  for (int n = 2; n <= 300; n++) {
+  for (var n = 2; n <= 300; n++) {
     Pair best;
     double bestConfidence;
-    double bestDeltaFrom95 = double.infinity;
+    var bestDeltaFrom95 = double.infinity;
     for (var bracket in _generateGrowingBracket(n)) {
       final confidence = computeConfidenceCoefficient(n, bracket.a, bracket.b);
       final delta = (confidence - 0.95).abs();
@@ -35,9 +35,9 @@ void main() {
 /// See:
 /// http://mathworld.wolfram.com/BinomialCoefficient.html
 BigInt computeBinomialCoefficient(int n, int k) {
-  final BigInt nFactorial = factorial(n);
-  final BigInt kFactorial = factorial(k);
-  final BigInt nMinusKFactorial = factorial(n - k);
+  final nFactorial = factorial(n);
+  final kFactorial = factorial(k);
+  final nMinusKFactorial = factorial(n - k);
   final result = (nFactorial) ~/ (kFactorial * nMinusKFactorial);
   return result;
 }
@@ -47,22 +47,22 @@ BigInt computeBinomialCoefficient(int n, int k) {
 double computeConfidenceCoefficient(
     int n, int lowerPosition, int higherPosition) {
   // P(Y1 < m < Y5) = P(W = 1) + P(W = 2) + P(W = 3) + P(W = 4)
-  double result = 0.0;
-  for (int k = lowerPosition; k < higherPosition; k++) {
+  var result = 0.0;
+  for (var k = lowerPosition; k < higherPosition; k++) {
     // P(W) = (n over k) * ((0.5) ** k) * ((0.5) ** (n - k))
 //    print("computing P(W = $k)");
-    final BigInt nOverK = computeBinomialCoefficient(n, k);
+    final nOverK = computeBinomialCoefficient(n, k);
     final double powers = math.pow(0.5, k) * math.pow(0.5, n - k);
-    final double P = _multiply(nOverK, powers);
+    final P = _multiply(nOverK, powers);
     result += P;
   }
   return result;
 }
 
 Iterable<Pair> _generateGrowingBracket(int n) sync* {
-  final int medianPosition = n ~/ 2;
-  int lower = medianPosition;
-  int higher = medianPosition + 1;
+  final medianPosition = n ~/ 2;
+  var lower = medianPosition;
+  var higher = medianPosition + 1;
   while (lower > 0 || higher < n) {
     yield Pair(lower, higher);
     if (lower - 1 >= 0) yield Pair(lower - 1, higher);
@@ -76,8 +76,8 @@ Iterable<Pair> _generateGrowingBracket(int n) sync* {
 ///
 /// It is expected that the result will be <0,1>.
 double _multiply(BigInt integer, double powers) {
-  BigInt divided = integer;
-  double multiplied = powers;
+  var divided = integer;
+  var multiplied = powers;
   final billion = 1000000000;
   final billionInteger = BigInt.from(billion);
   while (!divided.isValidInt) {

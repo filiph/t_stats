@@ -101,14 +101,14 @@ void main() {
         52: '80658175170943878571660636856403766975289505440883277824000000000000'
       };
 
-      for (int n in correctResults.keys) {
+      for (var n in correctResults.keys) {
         expect(factorial(n), BigInt.parse(correctResults[n]));
       }
     });
   });
 
   group('Computes', () {
-    final Random rand = Random(1);
+    final rand = Random(1);
     final linear = Iterable.generate(500, (n) => n).toList(growable: false);
     final exponential =
         Iterable.generate(500, (n) => n * n).toList(growable: false);
