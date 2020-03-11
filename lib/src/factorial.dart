@@ -6,7 +6,7 @@ import 'dart:math' as math;
 /// https://github.com/PeterLuschny/Fast-Factorial-Functions/blob/master/JavaFactorial/src/de/luschny/math/factorial/FactorialSplit.java
 BigInt factorial(int n) {
   if (n < 0) {
-    throw new ArgumentError("Factorial of $n is undefined.");
+    throw ArgumentError("Factorial of $n is undefined.");
   }
 
   if (n < 2) return BigInt.one;
@@ -18,10 +18,10 @@ BigInt factorial(int n) {
   BigInt product(int n) {
     final int m = n ~/ 2;
     if (m == 0) {
-      return new BigInt.from(N += 2);
+      return BigInt.from(N += 2);
     }
     if (n == 2) {
-      return new BigInt.from((N += 2) * (N += 2));
+      return BigInt.from((N += 2) * (N += 2));
     }
     return product(n - m) * product(m);
   }

@@ -64,9 +64,9 @@ Iterable<Pair> _generateGrowingBracket(int n) sync* {
   int lower = medianPosition;
   int higher = medianPosition + 1;
   while (lower > 0 || higher < n) {
-    yield new Pair(lower, higher);
-    if (lower - 1 >= 0) yield new Pair(lower - 1, higher);
-    if (higher + 1 <= n) yield new Pair(lower, higher + 1);
+    yield Pair(lower, higher);
+    if (lower - 1 >= 0) yield Pair(lower - 1, higher);
+    if (higher + 1 <= n) yield Pair(lower, higher + 1);
     lower = math.max(0, lower - 1);
     higher = math.min(n, higher + 1);
   }

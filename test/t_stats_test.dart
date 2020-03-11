@@ -11,28 +11,28 @@ import 'package:test/test.dart';
 void main() {
   group('Initializing', () {
     test('null fails', () {
-      expect(() => new Statistic.from(null), throwsArgumentError);
+      expect(() => Statistic.from(null), throwsArgumentError);
     });
     test('empty fails', () {
-      expect(() => new Statistic.from([]), throwsArgumentError);
+      expect(() => Statistic.from([]), throwsArgumentError);
     });
     test('single fails', () {
-      expect(() => new Statistic.from([1]), throwsArgumentError);
+      expect(() => Statistic.from([1]), throwsArgumentError);
     });
     test('two measurements succeed', () {
-      expect(() => new Statistic.from([1, 2]), returnsNormally);
+      expect(() => Statistic.from([1, 2]), returnsNormally);
     });
     test('10.000 measurements succeed', () {
       final huge =
-          new Iterable.generate(10000, (n) => n * n).toList(growable: false);
-      expect(() => new Statistic.from(huge), returnsNormally);
+          Iterable.generate(10000, (n) => n * n).toList(growable: false);
+      expect(() => Statistic.from(huge), returnsNormally);
     });
   });
 
   group('Computes from precomputed', () {
     test('wikipedia sample', () {
       // https://en.wikipedia.org/wiki/Confidence_interval
-      final stat = new Statistic(25, 250.2, 250, 230, 270, 2.5, 240, 260);
+      final stat = Statistic(25, 250.2, 250, 230, 270, 2.5, 240, 260);
       expect(stat.stdError, closeTo(0.5, 0.01));
       expect(stat.lowerBound, closeTo(249.22, 0.1));
       expect(stat.upperBound, closeTo(251.18, 0.1));
@@ -108,13 +108,13 @@ void main() {
   });
 
   group('Computes', () {
-    final Random rand = new Random(1);
-    final linear = new Iterable.generate(500, (n) => n).toList(growable: false);
+    final Random rand = Random(1);
+    final linear = Iterable.generate(500, (n) => n).toList(growable: false);
     final exponential =
-        new Iterable.generate(500, (n) => n * n).toList(growable: false);
-    final random1 = new Iterable.generate(500, (n) => rand.nextInt(500))
+        Iterable.generate(500, (n) => n * n).toList(growable: false);
+    final random1 = Iterable.generate(500, (n) => rand.nextInt(500))
         .toList(growable: false);
-    final random2 = new Iterable.generate(500, (n) => rand.nextInt(100))
+    final random2 = Iterable.generate(500, (n) => rand.nextInt(100))
         .toList(growable: false);
     final onlyTwo = [1, 2];
 
@@ -125,11 +125,11 @@ void main() {
         onlyTwoStat;
 
     setUp(() {
-      linearStat = new Statistic.from(linear);
-      exponentialStat = new Statistic.from(exponential);
-      random1Stat = new Statistic.from(random1);
-      random2Stat = new Statistic.from(random2);
-      onlyTwoStat = new Statistic.from(onlyTwo);
+      linearStat = Statistic.from(linear);
+      exponentialStat = Statistic.from(exponential);
+      random1Stat = Statistic.from(random1);
+      random2Stat = Statistic.from(random2);
+      onlyTwoStat = Statistic.from(onlyTwo);
     });
 
     test('correct means', () {
@@ -152,7 +152,7 @@ void main() {
       // Example from here:
       // https://www.ucl.ac.uk/ich/short-courses-events/about-stats-courses/stats-rm/Chapter_8_Content/confidence_interval_single_median
 
-      final stat = new Statistic.from(
+      final stat = Statistic.from(
           [-1.4, -0.6, -0.2, -0.9, -3.2, -2.4, -0.7, -5.5, 0.1, -0.1, -0.3]);
       expect(stat.median, closeTo(-0.7, 0.001));
       expect(stat.medianLowerBound, closeTo(-3.2, 0.001));
@@ -163,7 +163,7 @@ void main() {
       // Example from here:
       // https://onlinecourses.science.psu.edu/stat414/node/316
 
-      final stat = new Statistic.from([
+      final stat = Statistic.from([
         2.10,
         2.35,
         2.35,
@@ -190,29 +190,28 @@ void main() {
     });
 
     test('median from two values is tweened', () {
-      final stat = new Statistic.from([1, 2]);
+      final stat = Statistic.from([1, 2]);
       expect(stat.median, closeTo(1.5, 0.0001));
     });
 
     test('higher bounds for more random data', () {
-      final consistentStat = new Statistic.from(
-          new Iterable.generate(1000, (_) => 100 + rand.nextInt(5)));
-      final inconsistentStat = new Statistic.from(
-          new Iterable.generate(1000, (_) => 100 + rand.nextInt(50)));
+      final consistentStat =
+          Statistic.from(Iterable.generate(1000, (_) => 100 + rand.nextInt(5)));
+      final inconsistentStat = Statistic.from(
+          Iterable.generate(1000, (_) => 100 + rand.nextInt(50)));
       expect(inconsistentStat.medianUpperBound,
           greaterThan(consistentStat.medianUpperBound));
     });
 
     test('infinite bounds for small sample sizes', () {
-      final smallStat = new Statistic.from([1, 2, 1, 2]);
+      final smallStat = Statistic.from([1, 2, 1, 2]);
       expect(smallStat.medianLowerBound, double.negativeInfinity);
       expect(smallStat.medianUpperBound, double.infinity);
     });
 
     test('small sample size doesn\'t show difference', () {
-      final smallStat = new Statistic.from([1, 2, 1, 2]);
-      final hugeStat =
-          new Statistic.from(new Iterable.generate(1000, (_) => 100));
+      final smallStat = Statistic.from([1, 2, 1, 2]);
+      final hugeStat = Statistic.from(Iterable.generate(1000, (_) => 100));
 
       expect(smallStat.isDifferentFrom(hugeStat), isFalse);
     });

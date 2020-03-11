@@ -59,7 +59,7 @@ class Statistic {
   /// ahead of time) and want to compare them to others.
   Statistic(int n, this.mean, this.median, this.min, this.max, num stdDeviation,
       this.medianLowerBound, this.medianUpperBound,
-      {this.name, this.precision: 2})
+      {this.name, this.precision = 2})
       : n = n,
         stdDeviation = stdDeviation,
         stdError = stdDeviation / math.sqrt(n);
@@ -70,16 +70,16 @@ class Statistic {
 
   /// Takes [values] and creates the Statistic instance with its stats.
   factory Statistic.from(Iterable<num> values, {String name}) {
-    if (values == null) throw new ArgumentError.notNull("values");
+    if (values == null) throw ArgumentError.notNull("values");
 
-    final List<num> orderedValues = new List<num>.from(values, growable: false)
+    final List<num> orderedValues = List<num>.from(values, growable: false)
       ..sort();
     final int n = orderedValues.length;
     if (n == 0) {
-      throw new ArgumentError("Cannot make stats from empty list of values");
+      throw ArgumentError("Cannot make stats from empty list of values");
     }
     if (n == 1) {
-      throw new ArgumentError("Cannot make stats from one value");
+      throw ArgumentError("Cannot make stats from one value");
     }
 
     final num min = orderedValues.first;
@@ -114,8 +114,8 @@ class Statistic {
     final upper =
         interval.isInvalid ? double.infinity : orderedValues[interval.b - 1];
 
-    return new Statistic(orderedValues.length, mean, median, min, max,
-        stdDeviation, lower, upper,
+    return Statistic(orderedValues.length, mean, median, min, max, stdDeviation,
+        lower, upper,
         name: name);
   }
 

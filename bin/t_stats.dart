@@ -6,7 +6,7 @@ import 'package:t_stats/t_stats.dart';
 
 Future<Null> main(List<String> args) async {
   final bool pretty = args.contains("--pretty");
-  final lineSplitter = new LineSplitter();
+  final lineSplitter = LineSplitter();
   bool hintGiven = false;
 
   final List<String> lines = await stdin
@@ -42,7 +42,7 @@ Future<Null> main(List<String> args) async {
     return;
   }
 
-  final stats = new Statistic.from(numbers);
+  final stats = Statistic.from(numbers);
   stdout.writeln(pretty ? stats.toString() : stats.toTSV());
 }
 
