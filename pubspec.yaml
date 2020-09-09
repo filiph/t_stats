@@ -1,6 +1,6 @@
 name: t_stats
 description: A micro-library for statistics, especially for comparing samples.
-version: 2.1.1
+version: 2.1.1+1
 homepage: https://github.com/filiph/t_stats
 
 environment:

@@ -1,3 +1,7 @@
+## 2.1.1+1
+
+- Apply `dartfmt`
+
 ## 2.1.1
 
 - Minor lint fixes (use `package:pedantic`)
