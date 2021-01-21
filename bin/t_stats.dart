@@ -27,6 +27,7 @@ Future<Null> main(List<String> args) async {
   final numbers = lines
       .map((s) => num.tryParse(s))
       .where((n) => n != null)
+      .cast<num>()
       .toList(growable: false);
 
   if (numbers.isEmpty) {

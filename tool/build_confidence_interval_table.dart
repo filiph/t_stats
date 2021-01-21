@@ -8,8 +8,8 @@ import 'package:t_stats/src/pair.dart';
 
 void main() {
   for (var n = 2; n <= 300; n++) {
-    Pair best;
-    double bestConfidence;
+    Pair? best;
+    double? bestConfidence;
     var bestDeltaFrom95 = double.infinity;
     for (var bracket in _generateGrowingBracket(n)) {
       final confidence = computeConfidenceCoefficient(n, bracket.a, bracket.b);
@@ -50,9 +50,8 @@ double computeConfidenceCoefficient(
   var result = 0.0;
   for (var k = lowerPosition; k < higherPosition; k++) {
     // P(W) = (n over k) * ((0.5) ** k) * ((0.5) ** (n - k))
-//    print("computing P(W = $k)");
     final nOverK = computeBinomialCoefficient(n, k);
-    final double powers = math.pow(0.5, k) * math.pow(0.5, n - k);
+    final powers = math.pow(0.5, k) * (math.pow(0.5, n - k) as double);
     final P = _multiply(nOverK, powers);
     result += P;
   }

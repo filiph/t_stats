@@ -122,5 +122,5 @@ Pair computeMedianConfidence(int n) {
 
   // We should use our hand-crafted intervals (provided by
   // `tool/build_confidence_interval_table.dart`).
-  return _precomputedIntervals[n];
+  return _precomputedIntervals[n]!;
 }

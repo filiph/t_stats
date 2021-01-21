@@ -59,7 +59,7 @@ class Statistic {
   /// ahead of time) and want to compare them to others.
   Statistic(int n, this.mean, this.median, this.min, this.max, num stdDeviation,
       this.medianLowerBound, this.medianUpperBound,
-      {this.name, this.precision = 2})
+      {this.name = '', this.precision = 2})
       : n = n,
         stdDeviation = stdDeviation,
         stdError = stdDeviation / math.sqrt(n);
@@ -69,9 +69,7 @@ class Statistic {
   //  need to figure out what to do with input like [1], though
 
   /// Takes [values] and creates the Statistic instance with its stats.
-  factory Statistic.from(Iterable<num> values, {String name}) {
-    if (values == null) throw ArgumentError.notNull("values");
-
+  factory Statistic.from(Iterable<num> values, {String name = ''}) {
     final orderedValues = List<num>.from(values, growable: false)..sort();
     final n = orderedValues.length;
     if (n == 0) {
@@ -93,7 +91,7 @@ class Statistic {
 
     var deltaSquaredSum = 0.0;
     for (var value in orderedValues) {
-      final double delta = value - mean;
+      final delta = value - mean;
       deltaSquaredSum += delta * delta;
     }
     final variance = deltaSquaredSum / (n - 1);
@@ -177,7 +175,7 @@ class Statistic {
   String toString() => "${_fmt(mean).padLeft(8)}  "
       "± ${_fmt(marginOfError).padLeft(6)} MoE / "
       "${_fmt(stdDeviation).padLeft(6)} SD    "
-      "${name ?? ''}";
+      "$name";
 
   /// Returns a tab separated value (TSV) string of [name], [mean],
   /// [lowerBound], [upperBound], [marginOfError], [stdDeviation], [stdError],
@@ -185,7 +183,7 @@ class Statistic {
   ///
   /// This is useful for copy-pasting to graphing programs and spreadsheets.
   String toTSV() => [
-        name ?? "",
+        name,
         mean,
         lowerBound,
         upperBound,
@@ -197,8 +195,7 @@ class Statistic {
         n
       ].join("\t");
 
-  String _fmt(num value, {int precision}) {
-    precision ??= this.precision;
+  String _fmt(num value) {
     return value.toStringAsFixed(precision);
   }
 }

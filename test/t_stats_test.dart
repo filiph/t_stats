@@ -10,9 +10,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('Initializing', () {
-    test('null fails', () {
-      expect(() => Statistic.from(null), throwsArgumentError);
-    });
     test('empty fails', () {
       expect(() => Statistic.from([]), throwsArgumentError);
     });
@@ -102,7 +99,7 @@ void main() {
       };
 
       for (var n in correctResults.keys) {
-        expect(factorial(n), BigInt.parse(correctResults[n]));
+        expect(factorial(n), BigInt.parse(correctResults[n]!));
       }
     });
   });
@@ -118,7 +115,7 @@ void main() {
         .toList(growable: false);
     final onlyTwo = [1, 2];
 
-    Statistic linearStat,
+    late Statistic linearStat,
         exponentialStat,
         random1Stat,
         random2Stat,
