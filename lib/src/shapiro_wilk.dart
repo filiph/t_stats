@@ -34,8 +34,10 @@ class ShapiroWilkResult {
   }
 }
 
-ShapiroWilkResult shapiroWilkTest(Iterable<double> x) {
-  var xx = _Vector(x.toList(growable: false)..sort());
+/// Adapted from
+/// https://github.com/pieterprovoost/jerzy/blob/master/lib/normality.js
+ShapiroWilkResult shapiroWilkTest(Iterable<num> x) {
+  var xx = _Vector(x.map((n) => n.toDouble()).toList(growable: false)..sort());
   // var mean = Statistic.from(xx.elements).mean;
   var n = xx.elements.length;
   var u = 1 / math.sqrt(n);
