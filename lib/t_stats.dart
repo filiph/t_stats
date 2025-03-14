@@ -20,6 +20,9 @@ class Statistic {
   /// https://en.wikipedia.org/wiki/Expected_value
   final num mean;
 
+  /// Geometric mean.
+  final num meanGeometric;
+
   /// Maximum observed number.
   final num max;
 
@@ -45,6 +48,11 @@ class Statistic {
   /// Median value.
   final num median;
 
+  /// Coefficient of variation. Unlike [stdError], this scales with
+  /// the measurement magnitudes. It's a better representation of
+  /// the variability of data when comparing statistics with different mean.
+  final num coefficientOfVariation;
+
   /// The lower bound of the 95% confidence interval of the population median.
   final num medianLowerBound;
 
@@ -59,6 +67,7 @@ class Statistic {
   Statistic(
     this.n,
     this.mean,
+    this.meanGeometric,
     this.median,
     this.min,
     this.max,
@@ -67,7 +76,8 @@ class Statistic {
     this.medianUpperBound, {
     this.name = '',
     this.precision = 2,
-  }) : stdError = stdDeviation / math.sqrt(n);
+  }) : stdError = stdDeviation / math.sqrt(n),
+       coefficientOfVariation = stdDeviation / mean;
 
   // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
   //  can be negative when we have precision in the tens, for example
@@ -88,11 +98,15 @@ class Statistic {
     final max = orderedValues.last;
 
     var total = 0.0;
+    var logTotal = 0.0;
     for (var value in orderedValues) {
       total += value;
+      logTotal += math.log(value);
     }
 
     final mean = total / n;
+    final logMean = logTotal / n;
+    final meanGeometric = math.exp(logMean);
 
     var deltaSquaredSum = 0.0;
     for (var value in orderedValues) {
@@ -120,6 +134,7 @@ class Statistic {
     return Statistic(
       orderedValues.length,
       mean,
+      meanGeometric,
       median,
       min,
       max,
