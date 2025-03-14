@@ -1,8 +1,9 @@
 ## 4.0.0
 
 - Add Shapiro-Wilk test of normality
-- Add geometric mean and multiplicative interval bounds 
-  (for log-normal distributions)
+- Add geometric mean (especially useful for log-normal distributions)
+- Add coefficient of variance
+- Add Mann-Whitney U test
 
 ## 3.1.0
 
