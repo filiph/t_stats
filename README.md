@@ -1,14 +1,19 @@
 # t_stats
 
-[![Build status](https://travis-ci.org/filiph/t_stats.svg)](https://travis-ci.org/filiph/t_stats)
-
-This package provides a single class which computes things like standard
+This package provides class `Statistic` which computes things like standard
 deviation and margin of error. It should be useful whenever you have a list 
-of numerical values and you want to:
+of numerical values, and you want to:
 
 * show simple stats like _mean_, _min_ and _max_, or
 * find out the confidence interval (at the standard 95% confidence level), or
-* confirm relationship to other measurements. 
+* confirm relationship to other measurements.
+
+Since version 4.0.0, the package also includes:
+
+* [Shapiro-Wilk test](https://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test)
+  of normality
+* [Mann–Whitney U test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test),
+  a non-parametric statistical test for comparing two distributions
 
 ## Library usage
 

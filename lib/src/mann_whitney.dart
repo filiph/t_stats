@@ -64,6 +64,10 @@ class MannWhitney {
   /// > the sample common language effect size is 90%.
   ///
   /// https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test
+  ///
+  /// In practice, this will be 0.5 if the two distributions are equivalent,
+  /// 0.0 if the second distribution dominates, and 1.0 if the first
+  /// distribution dominates.
   double get effectSize => u1 / (n1 * n2);
 }
 

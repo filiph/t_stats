@@ -2,8 +2,14 @@ import 'dart:math' as math;
 
 import 'distributions.dart';
 
+/// An implementation of the Shapiro-Wilk test of normality.
+///
+/// https://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test
 class ShapiroWilk {
+  /// The W statistic.
   final double w;
+
+  /// The p-value.
   final double pValue;
 
   const ShapiroWilk(this.w, this.pValue);
