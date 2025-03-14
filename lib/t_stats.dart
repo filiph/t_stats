@@ -5,6 +5,7 @@
 import 'dart:math' as math;
 
 import 'package:t_stats/src/median_confidence.dart';
+import 'package:t_stats/src/shapiro_wilk.dart';
 
 part 'src/t_distribution.dart';
 
@@ -40,6 +41,12 @@ class Statistic {
   /// Number of significant fraction digits.
   final int precision;
 
+  /// The result of the Shapiro-Wilk test.
+  final ShapiroWilkResult? shapiroWilkNormal;
+
+  /// The result of the Shapiro-Wilk test on the log of the statistic.
+  final ShapiroWilkResult? shapiroWilkLogNormal;
+
   /// Median value.
   final num median;
 
@@ -65,6 +72,8 @@ class Statistic {
     this.medianUpperBound, {
     this.name = '',
     this.precision = 2,
+    this.shapiroWilkNormal,
+    this.shapiroWilkLogNormal,
   }) : stdError = stdDeviation / math.sqrt(n);
 
   // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
@@ -115,6 +124,11 @@ class Statistic {
     final upper =
         interval.isInvalid ? double.infinity : orderedValues[interval.b - 1];
 
+    final shapiroWilkNormal = shapiroWilkTest(orderedValues);
+    final shapiroWilkLogNormal = shapiroWilkTest(
+      orderedValues.map((n) => math.log(n)),
+    );
+
     return Statistic(
       orderedValues.length,
       mean,
@@ -125,6 +139,8 @@ class Statistic {
       lower,
       upper,
       name: name,
+      shapiroWilkNormal: shapiroWilkNormal,
+      shapiroWilkLogNormal: shapiroWilkLogNormal,
     );
   }
 
