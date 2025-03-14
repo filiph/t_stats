@@ -531,4 +531,58 @@ void main() {
       expect(erf(-3), closeTo(-0.999977910, 0.000000001));
     });
   });
+
+  group('Mann-Whitney', () {
+    test('Wikipedia Aesop example', () {
+      // https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test#Illustration_of_calculation_methods
+      final tortoiseScore = <double>[12, 6, 5, 4, 3, 2];
+      final hareScore = <double>[11, 10, 9, 8, 7, 1];
+
+      final mannWhitney = MannWhitney.from(tortoiseScore, hareScore);
+
+      expect(mannWhitney.u1, 11);
+      expect(mannWhitney.u2, 25);
+      expect(mannWhitney.effectSize, lessThan(0.5));
+    });
+
+    test('complete win', () {
+      final winners = <double>[12, 12, 10, 7];
+      final losers = <double>[1, 2, 3, 4, 5, 5, 5];
+
+      final mannWhitney = MannWhitney.from(winners, losers);
+
+      expect(mannWhitney.u2, 0);
+      expect(mannWhitney.effectSize, 1.0);
+    });
+
+    test('complete loss', () {
+      final winners = <double>[12, 12, 10, 7];
+      final losers = <double>[1, 2, 3, 4, 5, 5, 5];
+
+      final mannWhitney = MannWhitney.from(losers, winners);
+
+      expect(mannWhitney.u1, 0);
+      expect(mannWhitney.effectSize, 0.0);
+    });
+
+    test('lots of identical values', () {
+      final winners = <double>[12, 10, 10, 10, 10, 10, 10];
+      final losers = <double>[10, 10, 10, 10, 9];
+
+      final mannWhitney = MannWhitney.from(winners, losers);
+
+      expect(mannWhitney.u1, greaterThan(mannWhitney.u2));
+      expect(mannWhitney.effectSize, greaterThan(0.5));
+    });
+
+    test('complete draw', () {
+      final a = <double>[1, 2, 3, 4, 5];
+      final b = <double>[2, 2, 3, 4, 4];
+
+      final mannWhitney = MannWhitney.from(a, b);
+
+      expect(mannWhitney.u1, equals(mannWhitney.u2));
+      expect(mannWhitney.effectSize, 0.5);
+    });
+  });
 }

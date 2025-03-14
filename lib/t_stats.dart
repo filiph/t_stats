@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:t_stats/src/median_confidence.dart';
 
+export 'package:t_stats/src/mann_whitney.dart';
 export 'package:t_stats/src/shapiro_wilk.dart';
 
 part 'src/t_distribution.dart';
