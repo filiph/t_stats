@@ -13,7 +13,7 @@ class Statistic {
   /// Sample size.
   final int n;
 
-  /// Geometric mean (average).
+  /// Arithmetic mean (a.k.a. [average]).
   ///
   /// https://en.wikipedia.org/wiki/Expected_value
   final num mean;
@@ -127,6 +127,9 @@ class Statistic {
       name: name,
     );
   }
+
+  /// Alias for [mean].
+  num get average => mean;
 
   /// 95% confidence interval lower bound of the [mean].
   num get lowerBound => mean - marginOfError;
