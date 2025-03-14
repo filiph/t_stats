@@ -1,3 +1,9 @@
+## 4.0.0
+
+- Add Shapiro-Wilk test of normality
+- Add geometric mean and multiplicative interval bounds 
+  (for log-normal distributions)
+
 ## 3.1.0
 
 - Upgrade to Dart 3.7.0
