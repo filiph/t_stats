@@ -2,18 +2,48 @@ import 'dart:math' as math;
 
 import 'package:meta/meta.dart';
 
+/// Error function.
+@visibleForTesting
+double erf(double z) {
+  double term;
+  double sum = 0;
+  int n = 0;
+  do {
+    term =
+        math.pow(-1, n) *
+        math.pow(z, 2 * n + 1) /
+        _fac(n.toDouble()) /
+        (2 * n + 1);
+    sum = sum + term;
+    n++;
+  } while (term.abs() > 0.000000000001);
+  return sum * 2 / math.sqrt(math.pi);
+}
+
+/// Factorial.
+///
+/// Uses [double] instead of int because these computations can go so high
+/// that [int] overflows.
+double _fac(double n) {
+  var result = 1.0;
+  for (var i = 2; i <= n; i++) {
+    result = result * i;
+  }
+  return result;
+}
+
+class StandardNormal extends _Normal {
+  StandardNormal() : super(0, 1);
+}
+
+/// This is adapted from
+/// https://github.com/pieterprovoost/jerzy/blob/master/lib/distributions.js.
+/// But only what's absolutely needed is implemented.
 class _Normal {
   final double mean;
   final double variance;
 
   _Normal(this.mean, this.variance);
-
-  // double _de(double x) =>
-  //     (1 / (math.sqrt(variance) * (math.sqrt(2 * math.pi)))) *
-  //     math.exp(-(math.pow(x - mean, 2)) / (2 * variance));
-
-  double _di(double x) =>
-      0.5 * (1 + erf((x - mean) / (math.sqrt(variance) * math.sqrt(2))));
 
   double distr(double arg) {
     return _di(arg);
@@ -70,35 +100,7 @@ class _Normal {
 
     return y * variance + mean;
   }
-}
 
-class StandardNormal extends _Normal {
-  StandardNormal() : super(0, 1);
-}
-
-/// Error function.
-@visibleForTesting
-double erf(double z) {
-  double term;
-  double sum = 0;
-  int n = 0;
-  do {
-    term =
-        math.pow(-1, n) *
-        math.pow(z, 2 * n + 1) /
-        fac(n.toDouble()) /
-        (2 * n + 1);
-    sum = sum + term;
-    n++;
-  } while (term.abs() > 0.000000000001);
-  return sum * 2 / math.sqrt(math.pi);
-}
-
-/// Factorial.
-double fac(double n) {
-  var result = 1.0;
-  for (var i = 2; i <= n; i++) {
-    result = result * i;
-  }
-  return result;
+  double _di(double x) =>
+      0.5 * (1 + erf((x - mean) / (math.sqrt(variance) * math.sqrt(2))));
 }
