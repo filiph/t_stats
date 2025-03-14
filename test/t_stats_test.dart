@@ -32,20 +32,7 @@ void main() {
   group('Computes from precomputed', () {
     test('wikipedia sample', () {
       // https://en.wikipedia.org/wiki/Confidence_interval
-      final stat = Statistic(
-        25,
-        250.2,
-        250,
-        230,
-        270,
-        2.5,
-        2.5 / sqrt(25),
-        240,
-        260,
-        250.2,
-        249,
-        251,
-      );
+      final stat = Statistic(25, 250.2, 250, 230, 270, 2.5, 240, 260);
       expect(stat.stdError, closeTo(0.5, 0.01));
       expect(stat.lowerBound, closeTo(249.22, 0.1));
       expect(stat.upperBound, closeTo(251.18, 0.1));
