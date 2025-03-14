@@ -22,32 +22,25 @@ void main() {
   ], name: "Your scores");
   print(stats2);
 
-  final stats3 = Statistic.from(Iterable.generate(2000, (n) => n).toList());
+  final stats3 = Statistic.from(
+    Iterable.generate(2000, (n) => n).toList(),
+    name: "Linear count",
+  );
   print(stats3);
 
   final random = Random();
   final stats4 = Statistic.from(
     Iterable.generate(2000, (_) => random.nextInt(100)).toList(),
+    name: "Random.nextInt(100)",
   );
   print(stats4);
   final stats5 = Statistic.from(
-    Iterable.generate(2000, (_) => random.nextInt(100)).toList(),
+    Iterable.generate(2000, (_) => random.nextInt(100) + 1).toList(),
+    name: "Random.nextInt(100) + 1",
   );
   print(stats5);
 
   print(stats.isDifferentFrom(stats2));
   print(stats.isDifferentFrom(stats4));
   print(stats4.isDifferentFrom(stats5));
-
-  void normalness(String name, Statistic statistic) {
-    print('Statistic $name:');
-    print('- normality: ${statistic.shapiroWilkNormal?.describe()}');
-    print('- lognormality: ${statistic.shapiroWilkLogNormal?.describe()}');
-  }
-
-  normalness('stat', stats);
-  normalness('stat2', stats2);
-  normalness('stat3', stats3);
-  normalness('stat4', stats4);
-  normalness('stat5', stats5);
 }

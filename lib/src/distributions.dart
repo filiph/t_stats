@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:meta/meta.dart';
+
 class _Normal {
   final double mean;
   final double variance;
@@ -75,6 +77,7 @@ class StandardNormal extends _Normal {
 }
 
 /// Error function.
+@visibleForTesting
 double erf(double z) {
   double term;
   double sum = 0;

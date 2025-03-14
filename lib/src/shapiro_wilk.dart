@@ -2,13 +2,122 @@ import 'dart:math' as math;
 
 import 'distributions.dart';
 
-class ShapiroWilkResult {
+class ShapiroWilk {
   final double w;
   final double pValue;
-  const ShapiroWilkResult(this.w, this.pValue);
 
-  bool isNormal({double significance = 0.05}) {
-    return pValue > significance;
+  const ShapiroWilk(this.w, this.pValue);
+
+  factory ShapiroWilk.from(Iterable<num> x) {
+    // Adapted from
+    // https://github.com/pieterprovoost/jerzy/blob/master/lib/normality.js.
+    // TODO: optimize
+
+    var xx = _Vector(
+      x.map((n) => n.toDouble()).toList(growable: false)..sort(),
+    );
+    // var mean = Statistic.from(xx.elements).mean;
+    var n = xx.elements.length;
+    var u = 1 / math.sqrt(n);
+
+    // m
+
+    var sn = StandardNormal();
+    var m = _Vector([]);
+    for (var i = 1; i <= n; i++) {
+      m.push(sn.inverse((i - 3 / 8) / (n + 1 / 4)));
+    }
+
+    // c
+
+    var md = m.dot(m);
+    var c = m.multiply(1 / math.sqrt(md));
+
+    // a
+
+    var an =
+        -2.706056 * math.pow(u, 5) +
+        4.434685 * math.pow(u, 4) -
+        2.071190 * math.pow(u, 3) -
+        0.147981 * math.pow(u, 2) +
+        0.221157 * u +
+        c.elements[n - 1];
+    var ann =
+        -3.582633 * math.pow(u, 5) +
+        5.682633 * math.pow(u, 4) -
+        1.752461 * math.pow(u, 3) -
+        0.293762 * math.pow(u, 2) +
+        0.042981 * u +
+        c.elements[n - 2];
+
+    double phi;
+
+    if (n > 5) {
+      phi =
+          (md -
+              2 * math.pow(m.elements[n - 1], 2) -
+              2 * math.pow(m.elements[n - 2], 2)) /
+          (1 - 2 * math.pow(an, 2) - 2 * math.pow(ann, 2));
+    } else {
+      phi =
+          (md - 2 * math.pow(m.elements[n - 1], 2)) / (1 - 2 * math.pow(an, 2));
+    }
+
+    var a = _Vector([]);
+    if (n > 5) {
+      a.push(-an);
+      a.push(-ann);
+      for (var i = 2; i < n - 2; i++) {
+        a.push(m.elements[i] * math.pow(phi, -1 / 2));
+      }
+      a.push(ann);
+      a.push(an);
+    } else {
+      a.push(-an);
+      for (var i = 1; i < n - 1; i++) {
+        a.push(m.elements[i] * math.pow(phi, -1 / 2));
+      }
+      a.push(an);
+    }
+
+    // w
+
+    final w = math.pow(a.multiplyVector(xx).sum(), 2) / xx.ss();
+
+    // p
+
+    double g, mu, sigma;
+
+    if (n < 12) {
+      var gamma = 0.459 * n - 2.273;
+      g = -math.log(gamma - math.log(1 - w));
+      mu =
+          -0.0006714 * math.pow(n, 3) +
+          0.025054 * math.pow(n, 2) -
+          0.39978 * n +
+          0.5440;
+      sigma = math.exp(
+        -0.0020322 * math.pow(n, 3) +
+            0.062767 * math.pow(n, 2) -
+            0.77857 * n +
+            1.3822,
+      );
+    } else {
+      var u = math.log(n);
+      g = math.log(1 - w);
+      mu =
+          0.0038915 * math.pow(u, 3) -
+          0.083751 * math.pow(u, 2) -
+          0.31082 * u -
+          1.5851;
+      sigma = math.exp(0.0030302 * math.pow(u, 2) - 0.082676 * u - 0.4803);
+    }
+
+    var z = (g - mu) / sigma;
+    var norm = StandardNormal();
+    final p = 1 - norm.distr(z);
+
+    return ShapiroWilk(w, p);
   }
 
   String describe() {
@@ -32,113 +141,10 @@ class ShapiroWilkResult {
         "W = ${w.toStringAsFixed(4)}). "
         "Data appears $wInterpretation.";
   }
-}
 
-/// Adapted from
-/// https://github.com/pieterprovoost/jerzy/blob/master/lib/normality.js
-ShapiroWilkResult shapiroWilkTest(Iterable<num> x) {
-  var xx = _Vector(x.map((n) => n.toDouble()).toList(growable: false)..sort());
-  // var mean = Statistic.from(xx.elements).mean;
-  var n = xx.elements.length;
-  var u = 1 / math.sqrt(n);
-
-  // m
-
-  var sn = StandardNormal();
-  var m = _Vector([]);
-  for (var i = 1; i <= n; i++) {
-    m.push(sn.inverse((i - 3 / 8) / (n + 1 / 4)));
+  bool isNormal({double significance = 0.05}) {
+    return pValue > significance;
   }
-
-  // c
-
-  var md = m.dot(m);
-  var c = m.multiply(1 / math.sqrt(md));
-
-  // a
-
-  var an =
-      -2.706056 * math.pow(u, 5) +
-      4.434685 * math.pow(u, 4) -
-      2.071190 * math.pow(u, 3) -
-      0.147981 * math.pow(u, 2) +
-      0.221157 * u +
-      c.elements[n - 1];
-  var ann =
-      -3.582633 * math.pow(u, 5) +
-      5.682633 * math.pow(u, 4) -
-      1.752461 * math.pow(u, 3) -
-      0.293762 * math.pow(u, 2) +
-      0.042981 * u +
-      c.elements[n - 2];
-
-  double phi;
-
-  if (n > 5) {
-    phi =
-        (md -
-            2 * math.pow(m.elements[n - 1], 2) -
-            2 * math.pow(m.elements[n - 2], 2)) /
-        (1 - 2 * math.pow(an, 2) - 2 * math.pow(ann, 2));
-  } else {
-    phi = (md - 2 * math.pow(m.elements[n - 1], 2)) / (1 - 2 * math.pow(an, 2));
-  }
-
-  var a = _Vector([]);
-  if (n > 5) {
-    a.push(-an);
-    a.push(-ann);
-    for (var i = 2; i < n - 2; i++) {
-      a.push(m.elements[i] * math.pow(phi, -1 / 2));
-    }
-    a.push(ann);
-    a.push(an);
-  } else {
-    a.push(-an);
-    for (var i = 1; i < n - 1; i++) {
-      a.push(m.elements[i] * math.pow(phi, -1 / 2));
-    }
-    a.push(an);
-  }
-
-  // w
-
-  final w = math.pow(a.multiplyVector(xx).sum(), 2) / xx.ss();
-
-  // p
-
-  double g, mu, sigma;
-
-  if (n < 12) {
-    var gamma = 0.459 * n - 2.273;
-    g = -math.log(gamma - math.log(1 - w));
-    mu =
-        -0.0006714 * math.pow(n, 3) +
-        0.025054 * math.pow(n, 2) -
-        0.39978 * n +
-        0.5440;
-    sigma = math.exp(
-      -0.0020322 * math.pow(n, 3) +
-          0.062767 * math.pow(n, 2) -
-          0.77857 * n +
-          1.3822,
-    );
-  } else {
-    var u = math.log(n);
-    g = math.log(1 - w);
-    mu =
-        0.0038915 * math.pow(u, 3) -
-        0.083751 * math.pow(u, 2) -
-        0.31082 * u -
-        1.5851;
-    sigma = math.exp(0.0030302 * math.pow(u, 2) - 0.082676 * u - 0.4803);
-  }
-
-  var z = (g - mu) / sigma;
-  var norm = StandardNormal();
-  final p = 1 - norm.distr(z);
-
-  return ShapiroWilkResult(w, p);
 }
 
 class _Vector {
@@ -146,14 +152,20 @@ class _Vector {
 
   _Vector(this.elements);
 
-  void push(double value) => elements.add(value);
-
   double dot(_Vector other) {
     var result = 0.0;
     for (var i = 0; i < elements.length; i++) {
       result = result + elements[i] * other.elements[i];
     }
     return result;
+  }
+
+  double mean() {
+    var sum = 0.0;
+    for (var i = 0, n = elements.length; i < n; ++i) {
+      sum += elements[i];
+    }
+    return sum / elements.length;
   }
 
   _Vector multiply(double factor) {
@@ -172,21 +184,7 @@ class _Vector {
     return result;
   }
 
-  double sum() {
-    double sum = 0;
-    for (var i = 0, n = elements.length; i < n; ++i) {
-      sum += elements[i];
-    }
-    return sum;
-  }
-
-  double mean() {
-    var sum = 0.0;
-    for (var i = 0, n = elements.length; i < n; ++i) {
-      sum += elements[i];
-    }
-    return sum / elements.length;
-  }
+  void push(double value) => elements.add(value);
 
   /// Total sum of squares.
   double ss() {
@@ -194,6 +192,14 @@ class _Vector {
     var sum = 0.0;
     for (var i = 0, n = elements.length; i < n; ++i) {
       sum += math.pow(elements[i] - m, 2);
+    }
+    return sum;
+  }
+
+  double sum() {
+    double sum = 0;
+    for (var i = 0, n = elements.length; i < n; ++i) {
+      sum += elements[i];
     }
     return sum;
   }

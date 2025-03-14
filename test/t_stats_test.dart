@@ -6,7 +6,6 @@ import 'dart:math';
 
 import 'package:t_stats/src/distributions.dart';
 import 'package:t_stats/src/factorial.dart';
-import 'package:t_stats/src/shapiro_wilk.dart';
 import 'package:t_stats/t_stats.dart';
 import 'package:test/test.dart';
 
@@ -400,7 +399,7 @@ void main() {
         2.3,
         1.8,
       ];
-      final result = shapiroWilkTest(w);
+      final result = ShapiroWilk.from(w);
       expect(result.w, closeTo(0.9018, 0.0001));
       expect(result.pValue, closeTo(0.000000017, 0.000000001));
       print(result.describe());
@@ -408,7 +407,7 @@ void main() {
 
     test('computes normality (c)', () {
       final c = <double>[1, 2, 3, 4];
-      final result = shapiroWilkTest(c);
+      final result = ShapiroWilk.from(c);
       expect(result.w, closeTo(0.9929, 0.0001));
       expect(result.pValue, closeTo(0.9719, 0.0001));
       print(result.describe());
@@ -517,7 +516,7 @@ void main() {
         38.04,
         38.07,
       ];
-      final result = shapiroWilkTest(b);
+      final result = ShapiroWilk.from(b);
       expect(result.w, closeTo(0.9334, 0.0001));
       expect(result.pValue, closeTo(0.000078, 0.000001));
       print(result.describe());
