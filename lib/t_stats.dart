@@ -6,6 +6,8 @@ import 'dart:math' as math;
 
 import 'package:t_stats/src/median_confidence.dart';
 
+export 'package:t_stats/src/shapiro_wilk.dart';
+
 part 'src/t_distribution.dart';
 
 /// Statistic information about a measurement.
@@ -17,6 +19,19 @@ class Statistic {
   ///
   /// https://en.wikipedia.org/wiki/Expected_value
   final num mean;
+
+  /// Geometric mean.
+  final num meanGeometric;
+
+  /// Lower bound of the 95% multiplicative confidence interval of
+  /// [meanGeometric]. This is useful for statistics with log-normal
+  /// distributions.
+  final num meanGeometricLower;
+
+  /// Upper bound of the 95% multiplicative confidence interval of
+  /// [meanGeometric]. This is useful for statistics with log-normal
+  /// distributions.
+  final num meanGeometricUpper;
 
   /// Maximum observed number.
   final num max;
@@ -61,11 +76,15 @@ class Statistic {
     this.min,
     this.max,
     this.stdDeviation,
+    this.stdError,
     this.medianLowerBound,
-    this.medianUpperBound, {
+    this.medianUpperBound,
+    this.meanGeometric,
+    this.meanGeometricLower,
+    this.meanGeometricUpper, {
     this.name = '',
     this.precision = 2,
-  }) : stdError = stdDeviation / math.sqrt(n);
+  });
 
   // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
   //  can be negative when we have precision in the tens, for example
@@ -86,19 +105,36 @@ class Statistic {
     final max = orderedValues.last;
 
     var total = 0.0;
+    var logTotal = 0.0;
     for (var value in orderedValues) {
       total += value;
+      logTotal += math.log(value);
     }
 
     final mean = total / n;
+    final logMean = logTotal / n;
 
     var deltaSquaredSum = 0.0;
+    var logDeltaSquaredSum = 0.0;
     for (var value in orderedValues) {
       final delta = value - mean;
       deltaSquaredSum += delta * delta;
+      final logDelta = math.log(value) - logMean;
+      logDeltaSquaredSum += logDelta * logDelta;
     }
+    final sqrtN = math.sqrt(n);
     final variance = deltaSquaredSum / (n - 1);
     final stdDeviation = math.sqrt(variance);
+    final stdError = stdDeviation / sqrtN;
+
+    final logVariance = logDeltaSquaredSum / (n - 1);
+    final logStdDeviation = math.sqrt(logVariance);
+    final logStdError = logStdDeviation / sqrtN;
+    final logMargin = _computeTDistribution(n) * logStdError;
+
+    final meanGeometric = math.exp(logMean);
+    final meanGeometricLower = math.exp(logMean - logMargin);
+    final meanGeometricUpper = math.exp(logMean + logMargin);
 
     num median;
     if (n.isOdd) {
@@ -122,8 +158,12 @@ class Statistic {
       min,
       max,
       stdDeviation,
+      stdError,
       lower,
       upper,
+      meanGeometric,
+      meanGeometricLower,
+      meanGeometricUpper,
       name: name,
     );
   }
@@ -191,6 +231,12 @@ class Statistic {
       "${_fmt(mean).padLeft(8)}  "
       "± ${_fmt(marginOfError).padLeft(6)} MoE / "
       "${_fmt(stdDeviation).padLeft(6)} SD    "
+      "$name";
+
+  String toStringLogNormal() =>
+      "${_fmt(meanGeometric).padLeft(8)}  "
+      "[${_fmt(meanGeometricLower).padLeft(6)} -- "
+      "${_fmt(meanGeometricUpper).padLeft(6)}] SD        "
       "$name";
 
   /// Returns a tab separated value (TSV) string of [name], [mean],
