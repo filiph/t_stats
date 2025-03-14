@@ -30,7 +30,12 @@ void main() {
     Iterable.generate(2000, (_) => random.nextInt(100)).toList(),
   );
   print(stats4);
+  final stats5 = Statistic.from(
+    Iterable.generate(2000, (_) => random.nextInt(100) + 1).toList(),
+  );
+  print(stats5);
 
   print(stats.isDifferentFrom(stats2));
   print(stats.isDifferentFrom(stats4));
+  print(stats4.isDifferentFrom(stats5));
 }
