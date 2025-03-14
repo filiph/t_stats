@@ -2,9 +2,6 @@
 // code is governed by a BSD-style license that can be found in the LICENSE
 // file.
 
-/// Support for simple t-statistics on lists of numbers.
-library t_stats;
-
 import 'dart:math' as math;
 
 import 'package:t_stats/src/median_confidence.dart';
@@ -57,12 +54,18 @@ class Statistic {
   /// You probably want to use [Statistic.from] instead. But this constructor
   /// exists in case you know the statistics (like when you computed them
   /// ahead of time) and want to compare them to others.
-  Statistic(int n, this.mean, this.median, this.min, this.max, num stdDeviation,
-      this.medianLowerBound, this.medianUpperBound,
-      {this.name = '', this.precision = 2})
-      : n = n,
-        stdDeviation = stdDeviation,
-        stdError = stdDeviation / math.sqrt(n);
+  Statistic(
+    this.n,
+    this.mean,
+    this.median,
+    this.min,
+    this.max,
+    this.stdDeviation,
+    this.medianLowerBound,
+    this.medianUpperBound, {
+    this.name = '',
+    this.precision = 2,
+  }) : stdError = stdDeviation / math.sqrt(n);
 
   // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
   //  can be negative when we have precision in the tens, for example
@@ -105,15 +108,24 @@ class Statistic {
       median = (orderedValues[index] + orderedValues[index + 1]) / 2;
     }
     final interval = computeMedianConfidence(n);
-    final lower = interval.isInvalid
-        ? double.negativeInfinity
-        : orderedValues[interval.a - 1];
+    final lower =
+        interval.isInvalid
+            ? double.negativeInfinity
+            : orderedValues[interval.a - 1];
     final upper =
         interval.isInvalid ? double.infinity : orderedValues[interval.b - 1];
 
-    return Statistic(orderedValues.length, mean, median, min, max, stdDeviation,
-        lower, upper,
-        name: name);
+    return Statistic(
+      orderedValues.length,
+      mean,
+      median,
+      min,
+      max,
+      stdDeviation,
+      lower,
+      upper,
+      name: name,
+    );
   }
 
   /// 95% confidence interval lower bound of the [mean].
@@ -147,17 +159,17 @@ class Statistic {
 
   /// Serialize [Statistic] as a [Map].
   Map<String, Object> toMap() => <String, Object>{
-        "name": name,
-        "n": n,
-        "mean": mean,
-        "max": max,
-        "min": min,
-        "stdDeviation": stdDeviation,
-        "stdError": stdError,
-        "lowerBound": lowerBound,
-        "marginOfError": marginOfError,
-        "upperBound": upperBound
-      };
+    "name": name,
+    "n": n,
+    "mean": mean,
+    "max": max,
+    "min": min,
+    "stdDeviation": stdDeviation,
+    "stdError": stdError,
+    "lowerBound": lowerBound,
+    "marginOfError": marginOfError,
+    "upperBound": upperBound,
+  };
 
   /// Output [Statistic] as a string.
   ///
@@ -172,7 +184,8 @@ class Statistic {
   /// The line is formatted for easy use in tables, such as when outputting
   /// and comparing many statistics in the terminal.
   @override
-  String toString() => "${_fmt(mean).padLeft(8)}  "
+  String toString() =>
+      "${_fmt(mean).padLeft(8)}  "
       "± ${_fmt(marginOfError).padLeft(6)} MoE / "
       "${_fmt(stdDeviation).padLeft(6)} SD    "
       "$name";
@@ -183,17 +196,17 @@ class Statistic {
   ///
   /// This is useful for copy-pasting to graphing programs and spreadsheets.
   String toTSV() => [
-        name,
-        mean,
-        lowerBound,
-        upperBound,
-        marginOfError,
-        stdDeviation,
-        stdError,
-        min,
-        max,
-        n
-      ].join("\t");
+    name,
+    mean,
+    lowerBound,
+    upperBound,
+    marginOfError,
+    stdDeviation,
+    stdError,
+    min,
+    max,
+    n,
+  ].join("\t");
 
   String _fmt(num value) {
     return value.toStringAsFixed(precision);

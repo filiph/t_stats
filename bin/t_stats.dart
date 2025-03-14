@@ -9,20 +9,26 @@ Future<Null> main(List<String> args) async {
   final lineSplitter = LineSplitter();
   var hintGiven = false;
 
-  final lines = await stdin
-      .timeout(const Duration(milliseconds: 100), onTimeout: (sink) {
-        if (hintGiven) return;
-        stdout.writeln("Please provide a POSIX pipe or write one number "
-            "per line, then hit Ctrl-D when done.");
-        hintGiven = true;
-      })
-      .map((bytes) {
-        final string = utf8.decode(bytes);
-        final lines = lineSplitter.convert(string);
-        return lines;
-      })
-      .expand((list) => list)
-      .toList();
+  final lines =
+      await stdin
+          .timeout(
+            const Duration(milliseconds: 100),
+            onTimeout: (sink) {
+              if (hintGiven) return;
+              stdout.writeln(
+                "Please provide a POSIX pipe or write one number "
+                "per line, then hit Ctrl-D when done.",
+              );
+              hintGiven = true;
+            },
+          )
+          .map((bytes) {
+            final string = utf8.decode(bytes);
+            final lines = lineSplitter.convert(string);
+            return lines;
+          })
+          .expand((list) => list)
+          .toList();
 
   final numbers = lines
       .map((s) => num.tryParse(s))
@@ -37,8 +43,10 @@ Future<Null> main(List<String> args) async {
   }
 
   if (numbers.length == 1) {
-    stderr.writeln("Only one input number was parsed. Cannot "
-        "compute meaningful statistics from a single number.");
+    stderr.writeln(
+      "Only one input number was parsed. Cannot "
+      "compute meaningful statistics from a single number.",
+    );
     exitCode = 2;
     return;
   }

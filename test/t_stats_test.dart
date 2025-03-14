@@ -20,8 +20,10 @@ void main() {
       expect(() => Statistic.from([1, 2]), returnsNormally);
     });
     test('10.000 measurements succeed', () {
-      final huge =
-          Iterable.generate(10000, (n) => n * n).toList(growable: false);
+      final huge = Iterable.generate(
+        10000,
+        (n) => n * n,
+      ).toList(growable: false);
       expect(() => Statistic.from(huge), returnsNormally);
     });
   });
@@ -95,7 +97,8 @@ void main() {
         49: '608281864034267560872252163321295376887552831379210240000000000',
         50: '30414093201713378043612608166064768844377641568960512000000000000',
         51: '1551118753287382280224243016469303211063259720016986112000000000000',
-        52: '80658175170943878571660636856403766975289505440883277824000000000000'
+        52:
+            '80658175170943878571660636856403766975289505440883277824000000000000',
       };
 
       for (var n in correctResults.keys) {
@@ -107,12 +110,18 @@ void main() {
   group('Computes', () {
     final rand = Random(1);
     final linear = Iterable.generate(500, (n) => n).toList(growable: false);
-    final exponential =
-        Iterable.generate(500, (n) => n * n).toList(growable: false);
-    final random1 = Iterable.generate(500, (n) => rand.nextInt(500))
-        .toList(growable: false);
-    final random2 = Iterable.generate(500, (n) => rand.nextInt(100))
-        .toList(growable: false);
+    final exponential = Iterable.generate(
+      500,
+      (n) => n * n,
+    ).toList(growable: false);
+    final random1 = Iterable.generate(
+      500,
+      (n) => rand.nextInt(500),
+    ).toList(growable: false);
+    final random2 = Iterable.generate(
+      500,
+      (n) => rand.nextInt(100),
+    ).toList(growable: false);
     final onlyTwo = [1, 2];
 
     late Statistic linearStat,
@@ -149,8 +158,19 @@ void main() {
       // Example from here:
       // https://www.ucl.ac.uk/ich/short-courses-events/about-stats-courses/stats-rm/Chapter_8_Content/confidence_interval_single_median
 
-      final stat = Statistic.from(
-          [-1.4, -0.6, -0.2, -0.9, -3.2, -2.4, -0.7, -5.5, 0.1, -0.1, -0.3]);
+      final stat = Statistic.from([
+        -1.4,
+        -0.6,
+        -0.2,
+        -0.9,
+        -3.2,
+        -2.4,
+        -0.7,
+        -5.5,
+        0.1,
+        -0.1,
+        -0.3,
+      ]);
       expect(stat.median, closeTo(-0.7, 0.001));
       expect(stat.medianLowerBound, closeTo(-3.2, 0.001));
       expect(stat.medianUpperBound, closeTo(-0.2, 0.001));
@@ -179,7 +199,7 @@ void main() {
         6.00,
         6.00,
         6.25,
-        6.45
+        6.45,
       ]);
       expect(stat.median, closeTo(4.80, 0.001));
       expect(stat.medianLowerBound, closeTo(3.10, 0.001));
@@ -192,12 +212,16 @@ void main() {
     });
 
     test('higher bounds for more random data', () {
-      final consistentStat =
-          Statistic.from(Iterable.generate(1000, (_) => 100 + rand.nextInt(5)));
+      final consistentStat = Statistic.from(
+        Iterable.generate(1000, (_) => 100 + rand.nextInt(5)),
+      );
       final inconsistentStat = Statistic.from(
-          Iterable.generate(1000, (_) => 100 + rand.nextInt(50)));
-      expect(inconsistentStat.medianUpperBound,
-          greaterThan(consistentStat.medianUpperBound));
+        Iterable.generate(1000, (_) => 100 + rand.nextInt(50)),
+      );
+      expect(
+        inconsistentStat.medianUpperBound,
+        greaterThan(consistentStat.medianUpperBound),
+      );
     });
 
     test('infinite bounds for small sample sizes', () {

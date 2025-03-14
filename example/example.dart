@@ -10,8 +10,16 @@ void main() {
   final stats = Statistic.from([1, 1, 1, 10, 1, 5, 1, 100], name: "My scores");
   print(stats);
 
-  final stats2 =
-      Statistic.from([24, 14, 20, 24, 21, 21, 19, 29], name: "Your scores");
+  final stats2 = Statistic.from([
+    24,
+    14,
+    20,
+    24,
+    21,
+    21,
+    19,
+    29,
+  ], name: "Your scores");
   print(stats2);
 
   final stats3 = Statistic.from(Iterable.generate(2000, (n) => n).toList());
@@ -19,7 +27,8 @@ void main() {
 
   final random = Random();
   final stats4 = Statistic.from(
-      Iterable.generate(2000, (_) => random.nextInt(100)).toList());
+    Iterable.generate(2000, (_) => random.nextInt(100)).toList(),
+  );
   print(stats4);
 
   print(stats.isDifferentFrom(stats2));

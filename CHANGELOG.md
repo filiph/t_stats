@@ -1,3 +1,8 @@
+## 3.1.0
+
+- Upgrade to Dart 3.7.0
+- Remove dependency on `pkg:quiver`
+
 ## 3.0.0
 
 - Migrate to null safety

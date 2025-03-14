@@ -1,4 +1,4 @@
-part of t_stats;
+part of '../t_stats.dart';
 
 /// Computes t-distribution critical values for given sample size [n].
 ///
@@ -101,7 +101,7 @@ double _computeTDistribution(int n) {
     1.99,
     1.99,
     1.99,
-    1.99
+    1.99,
   ];
 
   if (n >= 474) {

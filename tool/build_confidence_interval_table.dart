@@ -24,7 +24,8 @@ void main() {
       print("$n cannot have 95%+ confidence");
       continue;
     }
-    final asPercentiles = "${(best.a / n * 100).toStringAsFixed(2)}"
+    final asPercentiles =
+        "${(best.a / n * 100).toStringAsFixed(2)}"
         ",${(best.b / n * 100).toStringAsFixed(2)}";
     print("$n,${best.a},${best.b},$asPercentiles,$bestConfidence");
   }
@@ -45,7 +46,10 @@ BigInt computeBinomialCoefficient(int n, int k) {
 /// Computes the confidence coefficient for sample of size [n] and bracket
 /// value positions.
 double computeConfidenceCoefficient(
-    int n, int lowerPosition, int higherPosition) {
+  int n,
+  int lowerPosition,
+  int higherPosition,
+) {
   // P(Y1 < m < Y5) = P(W = 1) + P(W = 2) + P(W = 3) + P(W = 4)
   var result = 0.0;
   for (var k = lowerPosition; k < higherPosition; k++) {
