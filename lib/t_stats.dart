@@ -52,6 +52,8 @@ class Statistic {
   /// Coefficient of variation. Unlike [stdError], this scales with
   /// the measurement magnitudes. It's a better representation of
   /// the variability of data when comparing statistics with different mean.
+  ///
+  /// https://en.wikipedia.org/wiki/Coefficient_of_variation
   final num coefficientOfVariation;
 
   /// The lower bound of the 95% confidence interval of the population median.
@@ -59,6 +61,30 @@ class Statistic {
 
   /// The upper bound of the 95% confidence interval of the population median.
   final num medianUpperBound;
+
+  /// The 0.1 percentile value, a.k.a the first permil.
+  final num p01;
+
+  /// The 1st percentile value.
+  final num p1;
+
+  /// The 10th percentile value, a.k.a. the first decile.
+  final num p10;
+
+  /// The 25th percentile value, a.k.a. the first quartile.
+  final num p25;
+
+  /// The 75th percentile value, a.k.a. the third quartile.
+  final num p75;
+
+  /// The 90th percentile value, a.k.a. the ninth decile.
+  final num p90;
+
+  /// The 99th percentile value.
+  final num p99;
+
+  /// The 99.9 percentile value, a.k.a. the 999th permil.
+  final num p999;
 
   /// Direct constructor of a Statistic instance.
   ///
@@ -77,12 +103,16 @@ class Statistic {
     this.medianUpperBound, {
     this.name = '',
     this.precision = 2,
+    required this.p01,
+    required this.p1,
+    required this.p10,
+    required this.p25,
+    required this.p75,
+    required this.p90,
+    required this.p99,
+    required this.p999,
   }) : stdError = stdDeviation / math.sqrt(n),
        coefficientOfVariation = stdDeviation / mean;
-
-  // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
-  //  can be negative when we have precision in the tens, for example
-  //  need to figure out what to do with input like [1], though
 
   /// Takes [values] and creates the Statistic instance with its stats.
   factory Statistic.from(Iterable<num> values, {String name = ''}) {
@@ -117,13 +147,7 @@ class Statistic {
     final variance = deltaSquaredSum / (n - 1);
     final stdDeviation = math.sqrt(variance);
 
-    num median;
-    if (n.isOdd) {
-      median = orderedValues[n ~/ 2];
-    } else {
-      final index = n ~/ 2 - 1;
-      median = (orderedValues[index] + orderedValues[index + 1]) / 2;
-    }
+    num median = _calculatePercentile(orderedValues, 0.5);
     final interval = computeMedianConfidence(n);
     final lower =
         interval.isInvalid
@@ -131,6 +155,15 @@ class Statistic {
             : orderedValues[interval.a - 1];
     final upper =
         interval.isInvalid ? double.infinity : orderedValues[interval.b - 1];
+
+    final p01 = _calculatePercentile(orderedValues, 0.001);
+    final p1 = _calculatePercentile(orderedValues, 0.01);
+    final p10 = _calculatePercentile(orderedValues, 0.1);
+    final q1 = _calculatePercentile(orderedValues, 0.25);
+    final q3 = _calculatePercentile(orderedValues, 0.75);
+    final p90 = _calculatePercentile(orderedValues, 0.9);
+    final p99 = _calculatePercentile(orderedValues, 0.99);
+    final p999 = _calculatePercentile(orderedValues, 0.999);
 
     return Statistic(
       orderedValues.length,
@@ -143,8 +176,20 @@ class Statistic {
       lower,
       upper,
       name: name,
+      p01: p01,
+      p1: p1,
+      p10: p10,
+      p25: q1,
+      p75: q3,
+      p90: p90,
+      p99: p99,
+      p999: p999,
     );
   }
+
+  // TODO: suggested precision - precision where mean - stdErr and mean + stdErr only differ by at most one number
+  //  can be negative when we have precision in the tens, for example
+  //  need to figure out what to do with input like [1], though
 
   /// Alias for [mean].
   num get average => mean;
@@ -156,6 +201,8 @@ class Statistic {
   ///
   /// https://en.wikipedia.org/wiki/Margin_of_error
   num get marginOfError => _computeTDistribution(n) * stdError;
+
+  num get p50 => median;
 
   /// 95% confidence interval upper bound of the [mean].
   num get upperBound => mean + marginOfError;
@@ -211,6 +258,16 @@ class Statistic {
       "${_fmt(stdDeviation).padLeft(6)} SD    "
       "$name";
 
+  /// Returns the tabulated string of five-number summary.
+  ///
+  /// https://en.wikipedia.org/wiki/Five-number_summary
+  String toFiveNumberSummary() =>
+      "${_fmt(min).padLeft(8)}  "
+      "${_fmt(p25).padLeft(8)}  "
+      "${_fmt(median).padLeft(8)}  "
+      "${_fmt(p75).padLeft(8)}  "
+      "${_fmt(max).padLeft(8)}";
+
   /// Returns a tab separated value (TSV) string of [name], [mean],
   /// [lowerBound], [upperBound], [marginOfError], [stdDeviation], [stdError],
   /// [min], [max], [n].
@@ -231,5 +288,30 @@ class Statistic {
 
   String _fmt(num value) {
     return value.toStringAsFixed(precision);
+  }
+
+  static num _calculatePercentile(List<num> orderedValues, double percentile) {
+    if (percentile < 0 || percentile > 1) {
+      throw ArgumentError('Percentile must be between 0 and 1');
+    }
+
+    assert(orderedValues.isNotEmpty);
+    if (orderedValues.length == 1) {
+      return orderedValues[0];
+    }
+
+    double position = percentile * (orderedValues.length - 1);
+
+    if (position.floor() == position) {
+      return orderedValues[position.toInt()];
+    }
+
+    int lowerIndex = position.floor();
+    int upperIndex = position.ceil();
+    num lowerValue = orderedValues[lowerIndex];
+    num upperValue = orderedValues[upperIndex];
+
+    double fraction = position - lowerIndex;
+    return lowerValue + fraction * (upperValue - lowerValue);
   }
 }

@@ -32,7 +32,25 @@ void main() {
   group('Computes from precomputed', () {
     test('wikipedia sample', () {
       // https://en.wikipedia.org/wiki/Confidence_interval
-      final stat = Statistic(25, 250.2, 250.2, 250, 230, 270, 2.5, 240, 260);
+      final stat = Statistic(
+        25,
+        250.2,
+        250.2,
+        250,
+        230,
+        270,
+        2.5,
+        240,
+        260,
+        p01: 0,
+        p1: 0,
+        p10: 0,
+        p25: 0,
+        p75: 0,
+        p90: 0,
+        p99: 0,
+        p999: 0,
+      );
       expect(stat.stdError, closeTo(0.5, 0.01));
       expect(stat.lowerBound, closeTo(249.22, 0.1));
       expect(stat.upperBound, closeTo(251.18, 0.1));
@@ -210,6 +228,23 @@ void main() {
     test('median from two values is tweened', () {
       final stat = Statistic.from([1, 2]);
       expect(stat.median, closeTo(1.5, 0.0001));
+    });
+
+    test('quartiles', () {
+      final stat = Statistic.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      expect(stat.p25, closeTo(2.5, 0.0001));
+      expect(stat.median, closeTo(5, 0.0001));
+      expect(stat.p75, closeTo(7.5, 0.0001));
+    });
+
+    test('percentiles', () {
+      final stat = Statistic.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      expect(stat.p01, closeTo(0.01, 0.0001));
+      expect(stat.p1, closeTo(0.1, 0.0001));
+      expect(stat.p10, closeTo(1, 0.0001));
+      expect(stat.p90, closeTo(9, 0.0001));
+      expect(stat.p99, closeTo(9.9, 0.0001));
+      expect(stat.p999, closeTo(9.99, 0.0001));
     });
 
     test('higher bounds for more random data', () {
